@@ -5,8 +5,9 @@
 [![hygiene](https://github.com/yanxijian/video-hotkeys/actions/workflows/hygiene.yml/badge.svg)](https://github.com/yanxijian/video-hotkeys/actions/workflows/hygiene.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-userscript-black.svg)](https://www.tampermonkey.net/)
+[![Greasy Fork](https://img.shields.io/greasyfork/dt/604756)](https://greasyfork.org/zh-CN/scripts/604756-%E9%80%9A%E7%94%A8%E8%A7%86%E9%A2%91%E9%94%AE%E7%9B%98%E6%8E%A7%E5%88%B6-space)
 
-<!-- translated-from: README.md sha256:701c2a586fa7 -->
+<!-- translated-from: README.md sha256:003d8a1b6f3e -->
 
 ショートカットキーを実装していないサイトを含め、ウェブ上の**あらゆる** HTML5 動画にキーボード操作を追加する Tampermonkey ユーザースクリプト。
 
@@ -29,8 +30,8 @@
 ## インストール
 
 1. Chrome / Edge / Firefox 向け [Tampermonkey](https://www.tampermonkey.net/) をインストール
-2. ダッシュボードを開く → 新規スクリプト作成 → [`video-hotkeys.user.js`](video-hotkeys.user.js) の内容を貼り付け → 保存
-3. Greasy Fork での公開後は、raw ファイルから直接インストールも可能（リンク未定）
+2. [Greasy Fork](https://greasyfork.org/zh-CN/scripts/604756-%E9%80%9A%E7%94%A8%E8%A7%86%E9%A2%91%E9%94%AE%E7%9B%98%E6%8E%A7%E5%88%B6-space) からワンクリックでインストール（自動更新）
+3. またはダッシュボードを開く → 新規スクリプト作成 → [`video-hotkeys.user.js`](video-hotkeys.user.js) の内容を貼り付け → 保存
 
 ## 設定
 

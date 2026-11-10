@@ -5,8 +5,9 @@
 [![hygiene](https://github.com/yanxijian/video-hotkeys/actions/workflows/hygiene.yml/badge.svg)](https://github.com/yanxijian/video-hotkeys/actions/workflows/hygiene.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-userscript-black.svg)](https://www.tampermonkey.net/)
+[![Greasy Fork](https://img.shields.io/greasyfork/dt/604756)](https://greasyfork.org/zh-CN/scripts/604756-%E9%80%9A%E7%94%A8%E8%A7%86%E9%A2%91%E9%94%AE%E7%9B%98%E6%8E%A7%E5%88%B6-space)
 
-<!-- translated-from: README.md sha256:701c2a586fa7 -->
+<!-- translated-from: README.md sha256:003d8a1b6f3e -->
 
 단축키를 아직 구현하지 않은 사이트를 포함해, 웹의 **모든** HTML5 동영상에 키보드 조작을 추가해 주는 Tampermonkey 유저스크립트입니다.
 
@@ -29,8 +30,8 @@
 ## 설치
 
 1. Chrome / Edge / Firefox용 [Tampermonkey](https://www.tampermonkey.net/) 설치
-2. 대시보드 열기 → 새 스크립트 만들기 → [`video-hotkeys.user.js`](video-hotkeys.user.js) 내용 붙여넣기 → 저장
-3. Greasy Fork 게시 후에는 raw 파일로 바로 설치 가능 (링크 추후 추가)
+2. [Greasy Fork](https://greasyfork.org/zh-CN/scripts/604756-%E9%80%9A%E7%94%A8%E8%A7%86%E9%A2%91%E9%94%AE%E7%9B%98%E6%8E%A7%E5%88%B6-space)에서 원클릭 설치 (자동 업데이트)
+3. 또는 대시보드 열기 → 새 스크립트 만들기 → [`video-hotkeys.user.js`](video-hotkeys.user.js) 내용 붙여넣기 → 저장
 
 ## 설정
 

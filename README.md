@@ -5,6 +5,7 @@
 [![hygiene](https://github.com/yanxijian/video-hotkeys/actions/workflows/hygiene.yml/badge.svg)](https://github.com/yanxijian/video-hotkeys/actions/workflows/hygiene.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-userscript-black.svg)](https://www.tampermonkey.net/)
+[![Greasy Fork](https://img.shields.io/greasyfork/dt/604756)](https://greasyfork.org/zh-CN/scripts/604756-%E9%80%9A%E7%94%A8%E8%A7%86%E9%A2%91%E9%94%AE%E7%9B%98%E6%8E%A7%E5%88%B6-space)
 
 A Tampermonkey userscript that adds keyboard controls to **any** HTML5 video on the web — including sites that never implemented them.
 
@@ -27,8 +28,8 @@ A Tampermonkey userscript that adds keyboard controls to **any** HTML5 video on 
 ## Install
 
 1. Install [Tampermonkey](https://www.tampermonkey.net/) for Chrome / Edge / Firefox
-2. Open the dashboard → Create a new script → paste the contents of [`video-hotkeys.user.js`](video-hotkeys.user.js) → save
-3. Or install directly from the raw file once published on Greasy Fork (link TBD)
+2. Install from [Greasy Fork](https://greasyfork.org/zh-CN/scripts/604756-%E9%80%9A%E7%94%A8%E8%A7%86%E9%A2%91%E9%94%AE%E7%9B%98%E6%8E%A7%E5%88%B6-space) — one click, updates automatically
+3. Or open the dashboard → Create a new script → paste the contents of [`video-hotkeys.user.js`](video-hotkeys.user.js) → save
 
 ## Configuration
 

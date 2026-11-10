@@ -5,8 +5,9 @@
 [![hygiene](https://github.com/yanxijian/video-hotkeys/actions/workflows/hygiene.yml/badge.svg)](https://github.com/yanxijian/video-hotkeys/actions/workflows/hygiene.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-userscript-black.svg)](https://www.tampermonkey.net/)
+[![Greasy Fork](https://img.shields.io/greasyfork/dt/604756)](https://greasyfork.org/zh-CN/scripts/604756-%E9%80%9A%E7%94%A8%E8%A7%86%E9%A2%91%E9%94%AE%E7%9B%98%E6%8E%A7%E5%88%B6-space)
 
-<!-- translated-from: README.md sha256:701c2a586fa7 -->
+<!-- translated-from: README.md sha256:003d8a1b6f3e -->
 
 给任意网页视频补上键盘控制的 Tampermonkey 用户脚本——尤其是那些没实现快捷键的网站。
 
@@ -29,8 +30,8 @@
 ## 安装
 
 1. 安装 Chrome / Edge / Firefox 的 [Tampermonkey](https://www.tampermonkey.net/)
-2. 打开管理面板 → 新建脚本 → 粘贴 [`video-hotkeys.user.js`](video-hotkeys.user.js) 的内容 → 保存
-3. 或等发布到 Greasy Fork 后直接一键安装（链接待补）
+2. 从 [Greasy Fork](https://greasyfork.org/zh-CN/scripts/604756-%E9%80%9A%E7%94%A8%E8%A7%86%E9%A2%91%E9%94%AE%E7%9B%98%E6%8E%A7%E5%88%B6-space) 一键安装（自动更新）
+3. 或打开管理面板 → 新建脚本 → 粘贴 [`video-hotkeys.user.js`](video-hotkeys.user.js) 的内容 → 保存
 
 ## 自定义
 
