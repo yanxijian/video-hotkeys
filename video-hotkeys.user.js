@@ -2,13 +2,15 @@
 // @name         通用视频键盘控制 (Space / ←→ / ↑↓)
 // @name:en      Universal Video Hotkeys (Space / ←→ / ↑↓)
 // @namespace    dsh.video.hotkeys
-// @version      1.2.2
+// @version      1.2.3
 // @description  给任意网页视频补上键盘控制：空格 播放/暂停，←/→ 快退/快进 5s（Shift 加速 30s），↑/↓ 音量。已实现快捷键的网站（YouTube 等）自动让路。提示显示在视频窗口内底部，支持全屏。
 // @description:en  Adds keyboard controls to any web video: Space play/pause, ←/→ seek ±5s (Shift ±30s), ↑/↓ volume. Defers to sites with native hotkeys (YouTube etc.). Toast shows inside the video, works in fullscreen.
 // @author       Dana
 // @license      MIT
 // @homepageURL  https://github.com/yanxijian/video-hotkeys
 // @supportURL   https://github.com/yanxijian/video-hotkeys/issues
+// @updateURL    https://cdn.jsdelivr.net/gh/yanxijian/video-hotkeys@master/video-hotkeys.user.js
+// @downloadURL  https://cdn.jsdelivr.net/gh/yanxijian/video-hotkeys@master/video-hotkeys.user.js
 // @match        *://*/*
 // @run-at       document-idle
 // @grant        none
