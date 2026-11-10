@@ -7,7 +7,7 @@
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-userscript-black.svg)](https://www.tampermonkey.net/)
 [![Greasy Fork](https://img.shields.io/greasyfork/dt/604756)](https://greasyfork.org/zh-CN/scripts/604756-%E9%80%9A%E7%94%A8%E8%A7%86%E9%A2%91%E9%94%AE%E7%9B%98%E6%8E%A7%E5%88%B6-space)
 
-<!-- translated-from: README.md sha256:003d8a1b6f3e -->
+<!-- translated-from: README.md sha256:da6ced81321d -->
 
 ショートカットキーを実装していないサイトを含め、ウェブ上の**あらゆる** HTML5 動画にキーボード操作を追加する Tampermonkey ユーザースクリプト。
 
@@ -26,6 +26,7 @@
 - **動画内トースト** — フィードバックは動画のビューポート内・中央下に表示。全画面でも有効
 - **ライブ配信セーフ** — 長さが確定していない配信ではシークしない
 - **iframe 対応** — 埋め込みプレーヤーでも動作
+- **多言語 UI** — トースト表示はブラウザの言語に追従（English / 简体中文 / 日本語 / 한국어）
 
 ## インストール
 

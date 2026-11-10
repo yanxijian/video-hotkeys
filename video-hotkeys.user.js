@@ -2,7 +2,7 @@
 // @name         通用视频键盘控制 (Space / ←→ / ↑↓)
 // @name:en      Universal Video Hotkeys (Space / ←→ / ↑↓)
 // @namespace    dsh.video.hotkeys
-// @version      1.2.3
+// @version      1.2.4
 // @description  给任意网页视频补上键盘控制：空格 播放/暂停，←/→ 快退/快进 5s（Shift 加速 30s），↑/↓ 音量。已实现快捷键的网站（YouTube 等）自动让路。提示显示在视频窗口内底部，支持全屏。
 // @description:en  Adds keyboard controls to any web video: Space play/pause, ←/→ seek ±5s (Shift ±30s), ↑/↓ volume. Defers to sites with native hotkeys (YouTube etc.). Toast shows inside the video, works in fullscreen.
 // @author       Dana
@@ -29,6 +29,16 @@
     'v.qq.com', 'netflix.com', 'twitch.tv', 'douyin.com', 'tiktok.com',
   ];
   if (BLACKLIST.some(d => location.hostname.endsWith(d))) return;
+
+  // ===== UI strings =====
+  // Toast text follows the browser language; unrecognized languages fall back to English.
+  const I18N = {
+    en: { play: '▶ Play', pause: '⏸ Pause', volume: 'Volume', muted: ' (muted)', live: 'Live streams cannot be seeked' },
+    zh: { play: '▶ 播放', pause: '⏸ 暂停', volume: '音量', muted: '（静音）', live: '直播流不支持快进/快退' },
+    ja: { play: '▶ 再生', pause: '⏸ 一時停止', volume: '音量', muted: '（ミュート）', live: 'ライブ配信ではシークできません' },
+    ko: { play: '▶ 재생', pause: '⏸ 일시정지', volume: '음량', muted: ' (음소거)', live: '라이브 스트림은 시킹할 수 없습니다' },
+  };
+  const T = I18N[(navigator.language || 'en').slice(0, 2).toLowerCase()] || I18N.en;
 
   // ===== 选定目标视频 =====
   // 规则：优先取「视口内可见、面积最大」的视频；无可见的退回页面上任意一个
@@ -105,7 +115,7 @@
 
   function seek(v, delta) {
     // 直播流没有可寻址的 duration，跳过
-    if (!isFinite(v.duration) || v.duration <= 0) { toast('直播流不支持快进/快退', v); return; }
+    if (!isFinite(v.duration) || v.duration <= 0) { toast(T.live, v); return; }
     v.currentTime = Math.min(Math.max(0, v.currentTime + delta), v.duration);
     toast(`${delta > 0 ? '▶▶' : '◀◀'} ${fmt(v.currentTime)}`, v);
   }
@@ -113,7 +123,7 @@
   function changeVolume(v, delta) {
     if (v.muted && delta > 0) v.muted = false;
     v.volume = Math.min(1, Math.max(0, Math.round((v.volume + delta) * 100) / 100));
-    toast(`音量 ${Math.round(v.volume * 100)}%${v.muted ? '（静音）' : ''}`, v);
+    toast(`${T.volume} ${Math.round(v.volume * 100)}%${v.muted ? T.muted : ''}`, v);
   }
 
   // ===== 按键处理 =====
@@ -138,7 +148,7 @@
         const wasPaused = v.paused; // 先记录状态，play/pause 会同步翻转它
         if (wasPaused) v.play().catch(() => {});
         else v.pause();
-        toast(wasPaused ? '▶ 播放' : '⏸ 暂停', v);
+        toast(wasPaused ? T.play : T.pause, v);
         break;
       }
       case 'ArrowLeft': seek(v, e.shiftKey ? -30 : -SEEK_STEP); break;
