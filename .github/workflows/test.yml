@@ -1,0 +1,36 @@
+# Behavioral tests for the userscript. Zero dependencies: Node.js built-ins
+# only, so no install step. Runs only when a test input changes - README and
+# configuration edits do not start this workflow.
+
+name: test
+
+on:
+  push:
+    branches: [master, main]
+    paths: &test_inputs
+      - 'video-hotkeys.user.js'
+      - 'tests/**'
+      - '.github/workflows/test.yml'
+  pull_request:
+    branches: [master, main]
+    paths: *test_inputs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  node-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Run behavioral tests
+        run: node --test

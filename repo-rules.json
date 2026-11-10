@@ -77,7 +77,9 @@
     "scripts/repo_rules.py",
     ".githooks/pre-commit",
     ".githooks/commit-msg",
-    ".github/workflows/hygiene.yml"
+    ".github/workflows/hygiene.yml",
+    ".github/workflows/test.yml",
+    "tests/blacklist.test.js"
   ],
   "markdown": {
     "globs": [
@@ -127,7 +129,8 @@
   },
   "actions": {
     "require": {
-      "actions/checkout": "v7"
+      "actions/checkout": "v7",
+      "actions/setup-node": "v7"
     },
     "allow_sha": true
   }

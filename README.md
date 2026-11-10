@@ -19,7 +19,7 @@ A Tampermonkey userscript that adds keyboard controls to **any** HTML5 video on 
 | `↑` / `↓` | Volume ±5% (↓ to 0 mutes, ↑ unmutes) |
 
 - **Smart targeting** — controls the largest visible video on the page
-- **Defers to native hotkeys** — exits on sites that implement their own (YouTube, Netflix, Twitch, TikTok, …). Editable `BLACKLIST` at the top of the script
+- **Defers to native hotkeys** — exits on sites that implement their own (YouTube, Netflix, Twitch, TikTok, …). Manage the blacklist from the userscript menu: add sites, disable or reset entries
 - **Typing-safe** — never fires while you're typing in inputs / contenteditable
 - **In-video toast** — feedback shows inside the video viewport, bottom-center; works in fullscreen
 - **Live-stream safe** — no seeking on streams without a finite duration
@@ -39,7 +39,15 @@ Everything you might want to tweak sits in the config block at the top:
 ```js
 const SEEK_STEP = 5;      // ←/→ step in seconds
 const VOLUME_STEP = 0.05; // ↑/↓ step
-const BLACKLIST = [ ... ]; // sites with native hotkeys, skipped automatically
+const BLACKLIST = [ ... ]; // built-in defaults, managed via the userscript menu
+```
+
+## Development
+
+Behavioral tests run on the built-in Node.js test runner, zero dependencies:
+
+```bash
+node --test
 ```
 
 ## License

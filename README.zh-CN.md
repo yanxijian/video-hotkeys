@@ -7,7 +7,7 @@
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-userscript-black.svg)](https://www.tampermonkey.net/)
 [![Greasy Fork](https://img.shields.io/greasyfork/dt/604756)](https://greasyfork.org/zh-CN/scripts/604756-%E9%80%9A%E7%94%A8%E8%A7%86%E9%A2%91%E9%94%AE%E7%9B%98%E6%8E%A7%E5%88%B6-space)
 
-<!-- translated-from: README.md sha256:da6ced81321d -->
+<!-- translated-from: README.md sha256:7f3e6563dcd0 -->
 
 给任意网页视频补上键盘控制的 Tampermonkey 用户脚本——尤其是那些没实现快捷键的网站。
 
@@ -21,7 +21,7 @@
 | `↑` / `↓` | 音量 ±5%（↓ 到 0 静音，↑ 解除静音） |
 
 - **智能定位** — 自动控制页面上最大的可见视频
-- **让位原生快捷键** — 在已实现快捷键的站点（YouTube、爱奇艺、优酷、腾讯视频、Netflix、Twitch、抖音/TikTok 等）自动退出；`BLACKLIST` 在脚本顶部，可自行编辑
+- **让位原生快捷键** — 在已实现快捷键的站点（YouTube、爱奇艺、优酷、腾讯视频、Netflix、Twitch、抖音/TikTok 等）自动退出；黑名单可从脚本菜单管理（新增、禁用、恢复默认）
 - **输入安全** — 在输入框 / contenteditable 中打字时绝不触发
 - **视频内提示** — 反馈显示在视频视口内、底部居中；全屏下同样有效
 - **直播安全** — 无有限时长的直播流不做快进快退
@@ -41,7 +41,15 @@
 ```js
 const SEEK_STEP = 5;      // ←/→ 步长（秒）
 const VOLUME_STEP = 0.05; // ↑/↓ 步长
-const BLACKLIST = [ ... ]; // 已有原生快捷键的站点，自动让路
+const BLACKLIST = [ ... ]; // 内置默认，可从脚本菜单管理
+```
+
+## 开发
+
+行为测试使用 Node.js 内置测试运行器，零依赖：
+
+```bash
+node --test
 ```
 
 ## 许可证
