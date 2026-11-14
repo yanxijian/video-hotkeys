@@ -23,7 +23,7 @@ A Tampermonkey userscript that adds keyboard controls to **any** HTML5 video on 
 - **Typing-safe** — never fires while you're typing in inputs / contenteditable
 - **In-video toast** — feedback shows inside the video viewport, bottom-center; works in fullscreen
 - **Live-stream safe** — no seeking on streams without a finite duration
-- **iframe-friendly** — runs in embedded players too
+- **iframe-friendly** — works in embedded players too; keys are forwarded into the player frame, so there is no need to click it first
 - **Language-aware UI** — toasts follow the browser language (English / 简体中文 / 日本語 / 한국어)
 
 ## Install

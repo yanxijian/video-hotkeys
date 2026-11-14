@@ -2,7 +2,7 @@
 // @name         通用视频键盘控制 (Space / ←→ / ↑↓)
 // @name:en      Universal Video Hotkeys (Space / ←→ / ↑↓)
 // @namespace    dsh.video.hotkeys
-// @version      1.3.0
+// @version      1.4.0
 // @description  给任意网页视频补上键盘控制：空格 播放/暂停，←/→ 快退/快进 5s（Shift 加速 30s），↑/↓ 音量。已实现快捷键的网站（YouTube 等）自动让路，黑名单可从脚本菜单管理。提示显示在视频窗口内底部，支持全屏。
 // @description:en  Adds keyboard controls to any web video: Space play/pause, ←/→ seek ±5s (Shift ±30s), ↑/↓ volume. Defers to sites with native hotkeys (YouTube etc.); blacklist manageable from the script menu. Toast shows inside the video, works in fullscreen.
 // @author       Dana
@@ -198,6 +198,42 @@
     toast(`${T.volume} ${Math.round(v.volume * 100)}%${v.muted ? T.muted : ''}`, v);
   }
 
+  // ===== 选定目标播放器（iframe） =====
+  // 焦点在顶层文档时，跨源 iframe 里的视频既看不到也收不到键盘事件；
+  // 只能选「视口内可见、面积最大」的 iframe，把按键转发给运行在其中的脚本实例
+  function pickIframe() {
+    const frames = document.querySelectorAll('iframe');
+    let best = null, bestArea = -1;
+    for (const f of frames) {
+      const r = f.getBoundingClientRect();
+      if (r.width < 200 || r.height < 150) continue; // 小于播放器量级的忽略
+      const style = getComputedStyle(f);
+      if (style.visibility === 'hidden' || style.display === 'none') continue;
+      const inViewport = r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth;
+      const area = r.width * r.height * (inViewport ? 2 : 0.5); // 可见的加权
+      if (area > bestArea) { bestArea = area; best = f; }
+    }
+    return best;
+  }
+
+  // ===== 按键语义 =====
+  // keydown 与 postMessage 两条路径共用同一份处理
+  function handleAction(key, shiftKey, v) {
+    switch (key) {
+      case ' ': {
+        const wasPaused = v.paused; // 先记录状态，play/pause 会同步翻转它
+        if (wasPaused) v.play().catch(() => {});
+        else v.pause();
+        toast(wasPaused ? T.play : T.pause, v);
+        break;
+      }
+      case 'ArrowLeft': seek(v, shiftKey ? -30 : -SEEK_STEP); break;
+      case 'ArrowRight': seek(v, shiftKey ? 30 : SEEK_STEP); break;
+      case 'ArrowUp': changeVolume(v, VOLUME_STEP); break;
+      case 'ArrowDown': changeVolume(v, -VOLUME_STEP); break;
+    }
+  }
+
   // ===== 按键处理 =====
   // capture 阶段注册，尽量赶在页面自己的监听器之前；
   // 黑名单站点上监听器依然存在（否则菜单里恢复后要刷新才生效），只是不接管按键
@@ -212,25 +248,38 @@
     if (!isKey) return;
 
     const v = pickVideo();
-    if (!v) return; // 页面上没有视频，全部放行给浏览器默认行为
+    if (!v) {
+      // 视频在嵌入式播放器（跨源 iframe）里：顶层看不到 video，iframe 没有焦点也
+      // 收不到键盘事件。postMessage 转发给运行在其中的本脚本实例，等效于「自动激活」。
+      const f = pickIframe();
+      if (!f || !f.contentWindow) return; // 既没有视频也没有播放器 iframe，放行默认行为
+      e.preventDefault(); // 否则 Space 会滚动页面
+      e.stopImmediatePropagation();
+      f.contentWindow.postMessage({ vh: 1, key, shift: e.shiftKey }, '*');
+      return;
+    }
 
     e.preventDefault();
     e.stopImmediatePropagation();
-
-    switch (key) {
-      case ' ': {
-        const wasPaused = v.paused; // 先记录状态，play/pause 会同步翻转它
-        if (wasPaused) v.play().catch(() => {});
-        else v.pause();
-        toast(wasPaused ? T.play : T.pause, v);
-        break;
-      }
-      case 'ArrowLeft': seek(v, e.shiftKey ? -30 : -SEEK_STEP); break;
-      case 'ArrowRight': seek(v, e.shiftKey ? 30 : SEEK_STEP); break;
-      case 'ArrowUp': changeVolume(v, VOLUME_STEP); break;
-      case 'ArrowDown': changeVolume(v, -VOLUME_STEP); break;
-    }
+    handleAction(key, e.shiftKey, v);
   }, true);
+
+  // ===== 接收顶层实例转发的按键 =====
+  // vh 标记 + 来源校验，避免与宿主页面自己的消息互相干扰；
+  // 黑名单/打字保护与 keydown 路径完全一致
+  window.addEventListener('message', (e) => {
+    if (e.source !== window.parent) return; // 只接受直接父 frame 的转发
+    const data = e.data;
+    if (!data || data.vh !== 1 || typeof data.key !== 'string') return;
+    if (!hotkeysEnabled) return;
+    if (isTyping()) return;
+    const isKey = data.key === ' ' || data.key === 'ArrowLeft' || data.key === 'ArrowRight'
+               || data.key === 'ArrowUp' || data.key === 'ArrowDown';
+    if (!isKey) return;
+    const v = pickVideo();
+    if (!v) return;
+    handleAction(data.key, !!data.shift, v);
+  });
 
   // ===== 黑名单管理面板 =====
   // 从 userscript 菜单打开（任何站点都可用，包括黑名单站点本身）；再点一次菜单 = 关闭

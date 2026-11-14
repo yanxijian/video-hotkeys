@@ -7,7 +7,7 @@
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-userscript-black.svg)](https://www.tampermonkey.net/)
 [![Greasy Fork](https://img.shields.io/greasyfork/dt/604756)](https://greasyfork.org/zh-CN/scripts/604756-%E9%80%9A%E7%94%A8%E8%A7%86%E9%A2%91%E9%94%AE%E7%9B%98%E6%8E%A7%E5%88%B6-space)
 
-<!-- translated-from: README.md sha256:7f3e6563dcd0 -->
+<!-- translated-from: README.md sha256:74308d3c37a0 -->
 
 단축키를 아직 구현하지 않은 사이트를 포함해, 웹의 **모든** HTML5 동영상에 키보드 조작을 추가해 주는 Tampermonkey 유저스크립트입니다.
 
@@ -25,7 +25,7 @@
 - **입력 안전** — 입력란 / contenteditable에 입력하는 중에는 절대 발동하지 않음
 - **동영상 내 토스트** — 피드백은 동영상 뷰포트 안 하단 중앙에 표시. 전체 화면에서도 동작
 - **라이브 스트림 안전** — 길이가 정해지지 않은 스트림은 시킹하지 않음
-- **iframe 지원** — 임베디드 플레이어에서도 동작
+- **iframe 지원** — 임베디드 플레이어에서도 동작. 키 입력은 플레이어 iframe으로 자동 전달되어 클릭으로 포커스를 맞출 필요가 없습니다
 - **다국어 UI** — 토스트 표시는 브라우저 언어를 따름 (English / 简体中文 / 日本語 / 한국어)
 
 ## 설치
