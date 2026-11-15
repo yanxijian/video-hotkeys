@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         通用视频键盘控制 (Space / ←→ / ↑↓)
-// @name:en      Universal Video Hotkeys (Space / ←→ / ↑↓)
+// @name         网页视频播放快捷键（空格暂停 / ←→ 快进 / ↑↓ 音量）
+// @name:en      Video Hotkeys for Any Site (Space / ←→ / ↑↓)
 // @namespace    dsh.video.hotkeys
-// @version      1.6.0
+// @version      1.6.1
 // @description  给任意网页视频补上键盘控制：空格 播放/暂停，←/→ 快退/快进 5s（Shift 加速 30s），↑/↓ 音量。已实现快捷键的网站（YouTube 等）自动让路，黑名单可从脚本菜单管理。提示显示在视频窗口内底部，支持全屏。
 // @description:en  Adds keyboard controls to any web video: Space play/pause, ←/→ seek ±5s (Shift ±30s), ↑/↓ volume. Defers to sites with native hotkeys (YouTube etc.); blacklist manageable from the script menu. Toast shows inside the video, works in fullscreen.
 // @author       Dana
