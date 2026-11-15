@@ -13,6 +13,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 
 const src = fs.readFileSync(path.join(__dirname, '..', 'video-hotkeys.user.js'), 'utf8');
+const fileVersion = (/@version\s+(\S+)/.exec(src) || [])[1];
 
 // --- minimal page stubs -------------------------------------------------
 
@@ -48,6 +49,7 @@ async function runScenario({ hostname, lang, store, videos, iframes, keyEvent = 
   const created = [];
   const handlers = {};
   const registered = [];
+  const opened = [];
   const parentWin = {}; // sentinel for "the direct parent frame"
 
   const video = makeVideo();
@@ -58,7 +60,10 @@ async function runScenario({ hostname, lang, store, videos, iframes, keyEvent = 
     getValue: async k => store.get(k),
     setValue: async (k, v) => { store.set(k, v); },
     registerMenuCommand: (label, fn) => registered.push({ label, fn }),
+    xmlHttpRequest: opts => { handlers.xhr = opts; },
+    openInTab: (url, opts) => opened.push({ url, opts }),
   };
+  globalThis.GM_info = { script: { version: fileVersion } };
   Object.defineProperty(globalThis, 'navigator', { value: { language: lang }, configurable: true });
   Object.defineProperty(globalThis, 'location', { value: { hostname }, configurable: true });
   Object.defineProperty(globalThis, 'window', {
@@ -83,7 +88,8 @@ async function runScenario({ hostname, lang, store, videos, iframes, keyEvent = 
   vm.runInThisContext(src, { filename: 'video-hotkeys.user.js' });
   await new Promise(r => setTimeout(r, 0)); // loadConfig is async; let main finish
 
-  const result = { registered, video, created, toastTexts: () => created.map(e => e.textContent).filter(Boolean) };
+  const result = { registered, video, created, opened, toastTexts: () => created.map(e => e.textContent).filter(Boolean) };
+  result.xhr = () => handlers.xhr;
   result.prevented = false;
 
   if (keyEvent) {
@@ -104,7 +110,7 @@ async function runScenario({ hostname, lang, store, videos, iframes, keyEvent = 
 
 test('built-in blacklisted site: menu command present, keys untouched', async () => {
   const r = await runScenario({ hostname: 'www.youtube.com', lang: 'zh-CN', store: new Map() });
-  assert.strictEqual(r.registered.length, 1, 'menu command must be registered even on blacklisted sites');
+  assert.strictEqual(r.registered.length, 2, 'blacklist and update menu commands expected');
   assert.strictEqual(r.video.played, false, 'youtube.com must be blacklisted by default');
 });
 
@@ -135,6 +141,30 @@ test('user-added entry takes effect, including subdomains', async () => {
 test('suffix-anchored matching does not over-block', async () => {
   const r = await runScenario({ hostname: 'youtube.com.other.org', lang: 'en', store: new Map() });
   assert.strictEqual(r.video.played, true, 'youtube.com.other.org must not match youtube.com');
+});
+
+test('menu "check for updates": opens install page on newer, reports when current', async () => {
+  const r = await runScenario({ hostname: 'example.com', lang: 'zh-CN', store: new Map(), keyEvent: false });
+  assert.strictEqual(r.registered.length, 2, 'two menu commands expected');
+  const updateCmd = r.registered.find(c => c.label === '检查更新');
+  assert.ok(updateCmd, 'update menu command expected');
+
+  // remote equals current: report only, no install tab
+  updateCmd.fn();
+  r.xhr().onload({ status: 200, responseText: `// @version ${fileVersion}` });
+  assert.strictEqual(r.opened.length, 0, 'no tab when already up to date');
+  assert.ok(r.toastTexts().some(t => t.includes('已是最新')), `up-to-date toast expected, got: ${r.toastTexts()}`);
+
+  // remote newer: open the raw install page
+  r.xhr().onload({ status: 200, responseText: '// @version 99.0.0' });
+  assert.strictEqual(r.opened.length, 1, 'install tab expected on newer version');
+  assert.ok(r.opened[0].url.includes('raw.githubusercontent.com/yanxijian/video-hotkeys'));
+  assert.ok(r.toastTexts().some(t => t.includes('发现新版本')), `new-version toast expected, got: ${r.toastTexts()}`);
+
+  // network failure: failure toast, still no tab
+  r.xhr().onerror();
+  assert.strictEqual(r.opened.length, 1);
+  assert.ok(r.toastTexts().some(t => t.includes('失败')), `failure toast expected, got: ${r.toastTexts()}`);
 });
 
 test('menu command opens the management panel', async () => {

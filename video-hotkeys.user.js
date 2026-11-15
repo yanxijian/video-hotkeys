@@ -2,7 +2,7 @@
 // @name         通用视频键盘控制 (Space / ←→ / ↑↓)
 // @name:en      Universal Video Hotkeys (Space / ←→ / ↑↓)
 // @namespace    dsh.video.hotkeys
-// @version      1.4.0
+// @version      1.5.0
 // @description  给任意网页视频补上键盘控制：空格 播放/暂停，←/→ 快退/快进 5s（Shift 加速 30s），↑/↓ 音量。已实现快捷键的网站（YouTube 等）自动让路，黑名单可从脚本菜单管理。提示显示在视频窗口内底部，支持全屏。
 // @description:en  Adds keyboard controls to any web video: Space play/pause, ←/→ seek ±5s (Shift ±30s), ↑/↓ volume. Defers to sites with native hotkeys (YouTube etc.); blacklist manageable from the script menu. Toast shows inside the video, works in fullscreen.
 // @author       Dana
@@ -16,6 +16,8 @@
 // @grant        GM.getValue
 // @grant        GM.setValue
 // @grant        GM.registerMenuCommand
+// @grant        GM.xmlHttpRequest
+// @grant        GM.openInTab
 // ==/UserScript==
 
 (async function () {
@@ -40,6 +42,8 @@
       add: 'Add', builtin: 'built-in', custom: 'custom', duplicate: 'Already in the list',
       invalid: 'Cannot parse that domain or URL', reset: 'Reset to defaults',
       resetConfirm: 'Clear all customization and restore the built-in blacklist?', close: 'Close',
+      menuUpdate: 'Check for updates', upToDate: v => `Already up to date (v${v})`,
+      newVersion: v => `New version v${v} found, opening the install page`, updateFailed: 'Update check failed',
     },
     zh: {
       play: '▶ 播放', pause: '⏸ 暂停', volume: '音量', muted: '（静音）', live: '直播流不支持快进/快退',
@@ -47,6 +51,8 @@
       add: '添加', builtin: '内置', custom: '自定义', duplicate: '已在黑名单中',
       invalid: '无法识别的域名或网址', reset: '恢复默认',
       resetConfirm: '清除所有自定义配置，恢复内置黑名单？', close: '关闭',
+      menuUpdate: '检查更新', upToDate: v => `已是最新版本（v${v}）`,
+      newVersion: v => `发现新版本 v${v}，正在打开安装页`, updateFailed: '检查更新失败',
     },
     ja: {
       play: '▶ 再生', pause: '⏸ 一時停止', volume: '音量', muted: '（ミュート）', live: 'ライブ配信ではシークできません',
@@ -54,6 +60,8 @@
       add: '追加', builtin: '組み込み', custom: 'カスタム', duplicate: 'すでにリストにあります',
       invalid: 'ドメインまたはURLを解析できません', reset: 'デフォルトに戻す',
       resetConfirm: 'すべての設定を消去して組み込みのブラックリストに戻しますか？', close: '閉じる',
+      menuUpdate: 'アップデートを確認', upToDate: v => `最新です（v${v}）`,
+      newVersion: v => `新しいバージョン v${v} を検出、インストールページを開いています`, updateFailed: 'アップデートの確認に失敗しました',
     },
     ko: {
       play: '▶ 재생', pause: '⏸ 일시정지', volume: '음량', muted: ' (음소거)', live: '라이브 스트림은 시킹할 수 없습니다',
@@ -61,11 +69,11 @@
       add: '추가', builtin: '기본 제공', custom: '사용자 정의', duplicate: '이미 목록에 있습니다',
       invalid: '도메인 또는 URL을 해석할 수 없습니다', reset: '기본값으로 복원',
       resetConfirm: '모든 설정을 지우고 기본 블랙리스트를 복원할까요?', close: '닫기',
+      menuUpdate: '업데이트 확인', upToDate: v => `최신 버전입니다 (v${v})`,
+      newVersion: v => `새 버전 v${v} 발견, 설치 페이지를 여는 중`, updateFailed: '업데이트 확인에 실패했습니다',
     },
   };
-  const T = I18N[(navigator.language || 'en').slice(0, 2).toLowerCase()] || I18N.en;
-
-  // ===== 黑名单：存储与匹配 =====
+  const T = I18N[(navigator.language || 'en').slice(0, 2).toLowerCase()] || I18N.en;  // ===== 黑名单：存储与匹配 =====
   // 用户配置只保存相对内置默认的差异（新增 added / 禁用 disabled），脚本更新带来的
   // 新内置站点自动生效。GM 存储按脚本隔离、跨站点共享，页面代码读不到。
   const STORAGE_KEY = 'blacklist-config';
@@ -111,6 +119,41 @@
 
   applyBlacklist();
   GM.registerMenuCommand(T.menu, openPanel);
+
+  // ===== 检查更新 =====
+  // 从 GitHub master 拉取脚本文本比对版本号（raw 无 CDN 缓存，推完新版立即可查）；
+  // 有新版本时打开 raw 安装页，由 Tampermonkey 弹出安装/更新确认
+  const UPDATE_CHECK_URL = 'https://raw.githubusercontent.com/yanxijian/video-hotkeys/master/video-hotkeys.user.js';
+
+  function compareVersions(a, b) {
+    const pa = String(a).split('.'), pb = String(b).split('.');
+    for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+      const x = parseInt(pa[i], 10) || 0, y = parseInt(pb[i], 10) || 0;
+      if (x !== y) return x < y ? -1 : 1;
+    }
+    return 0;
+  }
+
+  function checkForUpdate() {
+    const current = (typeof GM_info !== 'undefined' && GM_info.script) ? GM_info.script.version : '';
+    GM.xmlHttpRequest({
+      method: 'GET',
+      url: `${UPDATE_CHECK_URL}?t=${Date.now()}`,
+      onload: (res) => {
+        const m = res.status === 200 && /@version\s+(\S+)/.exec(res.responseText || '');
+        if (!m) { toast(T.updateFailed, null); return; }
+        if (compareVersions(m[1], current) > 0) {
+          toast(T.newVersion(m[1]), null);
+          GM.openInTab(UPDATE_CHECK_URL, { active: true });
+        } else {
+          toast(T.upToDate(current || m[1]), null);
+        }
+      },
+      onerror: () => toast(T.updateFailed, null),
+    });
+  }
+
+  GM.registerMenuCommand(T.menuUpdate, checkForUpdate);
 
   // ===== 选定目标视频 =====
   // 规则：优先取「视口内可见、面积最大」的视频；无可见的退回页面上任意一个

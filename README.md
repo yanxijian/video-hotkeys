@@ -25,6 +25,7 @@ A Tampermonkey userscript that adds keyboard controls to **any** HTML5 video on 
 - **Live-stream safe** — no seeking on streams without a finite duration
 - **iframe-friendly** — works in embedded players too; keys are forwarded into the player frame, so there is no need to click it first
 - **Language-aware UI** — toasts follow the browser language (English / 简体中文 / 日本語 / 한국어)
+- **Update check in the menu** — "Check for updates" compares against GitHub master and opens the install page when a newer version exists
 
 ## Install
 

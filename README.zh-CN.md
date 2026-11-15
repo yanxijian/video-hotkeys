@@ -7,7 +7,7 @@
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-userscript-black.svg)](https://www.tampermonkey.net/)
 [![Greasy Fork](https://img.shields.io/greasyfork/dt/604756)](https://greasyfork.org/zh-CN/scripts/604756-%E9%80%9A%E7%94%A8%E8%A7%86%E9%A2%91%E9%94%AE%E7%9B%98%E6%8E%A7%E5%88%B6-space)
 
-<!-- translated-from: README.md sha256:74308d3c37a0 -->
+<!-- translated-from: README.md sha256:9d0163bb1a82 -->
 
 给任意网页视频补上键盘控制的 Tampermonkey 用户脚本——尤其是那些没实现快捷键的网站。
 
@@ -27,6 +27,7 @@
 - **直播安全** — 无有限时长的直播流不做快进快退
 - **iframe 友好** — 嵌入式播放器里同样生效；按键自动转发进播放器 iframe，无需先点击激活
 - **多语言界面** — 提示文字跟随浏览器语言（English / 简体中文 / 日本語 / 한국어）
+- **菜单内检查更新** — 「检查更新」对比 GitHub master 的版本号，有新版时自动打开安装页
 
 ## 安装
 
