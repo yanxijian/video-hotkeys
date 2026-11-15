@@ -2,7 +2,7 @@
 // @name         通用视频键盘控制 (Space / ←→ / ↑↓)
 // @name:en      Universal Video Hotkeys (Space / ←→ / ↑↓)
 // @namespace    dsh.video.hotkeys
-// @version      1.5.0
+// @version      1.6.0
 // @description  给任意网页视频补上键盘控制：空格 播放/暂停，←/→ 快退/快进 5s（Shift 加速 30s），↑/↓ 音量。已实现快捷键的网站（YouTube 等）自动让路，黑名单可从脚本菜单管理。提示显示在视频窗口内底部，支持全屏。
 // @description:en  Adds keyboard controls to any web video: Space play/pause, ←/→ seek ±5s (Shift ±30s), ↑/↓ volume. Defers to sites with native hotkeys (YouTube etc.); blacklist manageable from the script menu. Toast shows inside the video, works in fullscreen.
 // @author       Dana
@@ -259,9 +259,25 @@
     return best;
   }
 
+  // ===== 全屏 =====
+  // Alt+Enter 切换全屏。requestFullscreen 需要 user gesture（按键本身就是）；
+  // 跨源 iframe 缺少 allowfullscreen 被拒时，回退请求父层全屏 iframe 元素
+  function toggleFullscreen(target) {
+    if (document.fullscreenElement) { document.exitFullscreen().catch(() => {}); return; }
+    target.requestFullscreen().catch(() => {
+      if (window.parent !== window) window.parent.postMessage({ vh: 2, key: 'Enter', shift: false }, '*');
+    });
+  }
+
+  // 全屏对象：优先包含控制条的播放器容器（class/id 含 player/video 的最近祖先），
+  // 否则视频本身（裸 video 全屏没有站点控制条，但画面一定正确）
+  function fullscreenTarget(v) {
+    return v.closest('[class*="player" i], [class*="video" i], [id*="player" i], [id*="video" i]') || v;
+  }
+
   // ===== 按键语义 =====
-  // keydown 与 postMessage 两条路径共用同一份处理
-  function handleAction(key, shiftKey, v) {
+  // keydown 与 postMessage 两条路径共用同一份处理；mods = { shift, alt }
+  function handleAction(key, mods, v) {
     switch (key) {
       case ' ': {
         const wasPaused = v.paused; // 先记录状态，play/pause 会同步翻转它
@@ -270,10 +286,11 @@
         toast(wasPaused ? T.play : T.pause, v);
         break;
       }
-      case 'ArrowLeft': seek(v, shiftKey ? -30 : -SEEK_STEP); break;
-      case 'ArrowRight': seek(v, shiftKey ? 30 : SEEK_STEP); break;
+      case 'ArrowLeft': seek(v, mods.shift ? -30 : -SEEK_STEP); break;
+      case 'ArrowRight': seek(v, mods.shift ? 30 : SEEK_STEP); break;
       case 'ArrowUp': changeVolume(v, VOLUME_STEP); break;
       case 'ArrowDown': changeVolume(v, -VOLUME_STEP); break;
+      case 'Enter': if (mods.alt) toggleFullscreen(fullscreenTarget(v)); break;
     }
   }
 
@@ -283,10 +300,12 @@
   window.addEventListener('keydown', (e) => {
     if (!hotkeysEnabled) return;
     if (isTyping()) return;
-    if (e.ctrlKey || e.altKey || e.metaKey) return; // 不碰系统组合键
 
     const key = e.key;
-    const isKey = key === ' ' || key === 'ArrowLeft' || key === 'ArrowRight'
+    const fullscreenKey = key === 'Enter' && e.altKey; // Alt+Enter：全屏开关
+    if (!fullscreenKey && (e.ctrlKey || e.altKey || e.metaKey)) return; // 不碰系统组合键（Alt+Enter 除外）
+
+    const isKey = fullscreenKey || key === ' ' || key === 'ArrowLeft' || key === 'ArrowRight'
                || key === 'ArrowUp' || key === 'ArrowDown';
     if (!isKey) return;
 
@@ -294,34 +313,57 @@
     if (!v) {
       // 视频在嵌入式播放器（跨源 iframe）里：顶层看不到 video，iframe 没有焦点也
       // 收不到键盘事件。postMessage 转发给运行在其中的本脚本实例，等效于「自动激活」。
+      // Alt+Enter 例外：直接全屏 iframe 元素本身（顶层有 user activation，无需转发）
       const f = pickIframe();
       if (!f || !f.contentWindow) return; // 既没有视频也没有播放器 iframe，放行默认行为
       e.preventDefault(); // 否则 Space 会滚动页面
       e.stopImmediatePropagation();
-      f.contentWindow.postMessage({ vh: 1, key, shift: e.shiftKey }, '*');
+      if (fullscreenKey) {
+        if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+        else f.requestFullscreen().catch(() => {});
+        return;
+      }
+      f.contentWindow.postMessage({ vh: 1, key, shift: e.shiftKey, alt: e.altKey }, '*');
       return;
     }
 
     e.preventDefault();
     e.stopImmediatePropagation();
-    handleAction(key, e.shiftKey, v);
+    handleAction(key, { shift: e.shiftKey, alt: e.altKey }, v);
   }, true);
 
-  // ===== 接收顶层实例转发的按键 =====
-  // vh 标记 + 来源校验，避免与宿主页面自己的消息互相干扰；
+  // ===== 接收 postMessage =====
+  // vh:1 = 父 frame 转发的按键，vh:2 = 子 iframe 的全屏请求（其自身 requestFullscreen
+  // 被拒时的回退）。vh 标记 + 来源校验，避免与宿主页面自己的消息互相干扰；
   // 黑名单/打字保护与 keydown 路径完全一致
   window.addEventListener('message', (e) => {
-    if (e.source !== window.parent) return; // 只接受直接父 frame 的转发
     const data = e.data;
-    if (!data || data.vh !== 1 || typeof data.key !== 'string') return;
+    if (!data || typeof data.key !== 'string') return;
+
+    if (data.vh === 2) {
+      // 只有我们页面里的 iframe 才有资格请求：全屏拥有该子 frame 的 iframe 元素
+      for (const f of document.querySelectorAll('iframe')) {
+        if (f.contentWindow === e.source) {
+          if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+          else f.requestFullscreen().catch(() => {});
+          return;
+        }
+      }
+      return;
+    }
+
+    if (data.vh !== 1) return;
+    if (e.source !== window.parent) return; // 只接受直接父 frame 的转发
     if (!hotkeysEnabled) return;
     if (isTyping()) return;
-    const isKey = data.key === ' ' || data.key === 'ArrowLeft' || data.key === 'ArrowRight'
-               || data.key === 'ArrowUp' || data.key === 'ArrowDown';
+    const key = data.key;
+    const fullscreenKey = key === 'Enter' && data.alt;
+    const isKey = fullscreenKey || key === ' ' || key === 'ArrowLeft' || key === 'ArrowRight'
+               || key === 'ArrowUp' || key === 'ArrowDown';
     if (!isKey) return;
     const v = pickVideo();
     if (!v) return;
-    handleAction(data.key, !!data.shift, v);
+    handleAction(key, { shift: !!data.shift, alt: !!data.alt }, v);
   });
 
   // ===== 黑名单管理面板 =====

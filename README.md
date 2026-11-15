@@ -17,6 +17,7 @@ A Tampermonkey userscript that adds keyboard controls to **any** HTML5 video on 
 | `←` / `→` | Seek −5s / +5s |
 | `Shift + ←` / `→` | Seek −30s / +30s |
 | `↑` / `↓` | Volume ±5% (↓ to 0 mutes, ↑ unmutes) |
+| `Alt + Enter` | Toggle fullscreen |
 
 - **Smart targeting** — controls the largest visible video on the page
 - **Defers to native hotkeys** — exits on sites that implement their own (YouTube, Netflix, Twitch, TikTok, …). Manage the blacklist from the userscript menu: add sites, disable or reset entries

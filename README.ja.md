@@ -7,7 +7,7 @@
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-userscript-black.svg)](https://www.tampermonkey.net/)
 [![Greasy Fork](https://img.shields.io/greasyfork/dt/604756)](https://greasyfork.org/zh-CN/scripts/604756-%E9%80%9A%E7%94%A8%E8%A7%86%E9%A2%91%E9%94%AE%E7%9B%98%E6%8E%A7%E5%88%B6-space)
 
-<!-- translated-from: README.md sha256:9d0163bb1a82 -->
+<!-- translated-from: README.md sha256:36c8fcb9fbce -->
 
 ショートカットキーを実装していないサイトを含め、ウェブ上の**あらゆる** HTML5 動画にキーボード操作を追加する Tampermonkey ユーザースクリプト。
 
@@ -19,6 +19,7 @@
 | `←` / `→` | 5 秒巻き戻し / 5 秒早送り |
 | `Shift + ←` / `→` | 30 秒巻き戻し / 30 秒早送り |
 | `↑` / `↓` | 音量 ±5%（↓ で 0 になるとミュート、↑ で解除） |
+| `Alt + Enter` | 全画面切り替え / 解除 |
 
 - **スマートターゲティング** — ページ上で最も大きな表示中の動画を自動で操作
 - **ネイティブのショートカットに譲る** — YouTube、Netflix、Twitch、TikTok など独自実装のあるサイトでは自動的に無効化。ブラックリストはユーザースクリプトメニューから管理（追加・無効化・リセット）
