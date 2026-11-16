@@ -7,7 +7,7 @@
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-userscript-black.svg)](https://www.tampermonkey.net/)
 [![Greasy Fork](https://img.shields.io/greasyfork/dt/604756)](https://greasyfork.org/zh-CN/scripts/604756-%E9%80%9A%E7%94%A8%E8%A7%86%E9%A2%91%E9%94%AE%E7%9B%98%E6%8E%A7%E5%88%B6-space)
 
-<!-- translated-from: README.md sha256:36c8fcb9fbce -->
+<!-- translated-from: README.md sha256:15e4f09e95d7 -->
 
 단축키를 아직 구현하지 않은 사이트를 포함해, 웹의 **모든** HTML5 동영상에 키보드 조작을 추가해 주는 Tampermonkey 유저스크립트입니다.
 
@@ -22,7 +22,7 @@
 | `Alt + Enter` | 전체 화면 전환 / 해제 |
 
 - **스마트 타기팅** — 페이지에서 가장 큰 보이는 동영상을 자동으로 조작
-- **네이티브 단축키 양보** — YouTube, Netflix, Twitch, TikTok 등 자체 단축키가 있는 사이트에서는 자동으로 비활성화. 블랙리스트는 유저스크립트 메뉴에서 관리 (추가·비활성화·초기화)
+- **네이티브 단축키 양보** — Netflix, Twitch, TikTok 등 자체 단축키가 있는 사이트에서는 자동으로 비활성화. YouTube는 반대로 기본적으로 직접 처리합니다 (임베디드 플레이어는 포커스가 없으면 네이티브 단축키가 작동하지 않고, Space/←→ 동작은 본 스크립트와 동일하기 때문). 블랙리스트는 유저스크립트 메뉴에서 관리 (추가·비활성화·초기화)
 - **입력 안전** — 입력란 / contenteditable에 입력하는 중에는 절대 발동하지 않음
 - **동영상 내 토스트** — 피드백은 동영상 뷰포트 안 하단 중앙에 표시. 전체 화면에서도 동작
 - **라이브 스트림 안전** — 길이가 정해지지 않은 스트림은 시킹하지 않음

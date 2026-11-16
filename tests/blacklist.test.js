@@ -124,9 +124,9 @@ async function runScenario({
 // --- scenarios -----------------------------------------------------------
 
 test('built-in blacklisted site: menu commands present, keys untouched', async () => {
-  const r = await runScenario({ hostname: 'www.youtube.com', lang: 'zh-CN', store: new Map() });
+  const r = await runScenario({ hostname: 'www.netflix.com', lang: 'zh-CN', store: new Map() });
   assert.strictEqual(r.registered.length, 2, 'blacklist and update menu commands expected');
-  assert.strictEqual(r.video.played, false, 'youtube.com must be blacklisted by default');
+  assert.strictEqual(r.video.played, false, 'netflix.com must be blacklisted by default');
 });
 
 test('non-blacklisted site: keys taken over, localized toast (zh-CN)', async () => {
@@ -136,8 +136,8 @@ test('non-blacklisted site: keys taken over, localized toast (zh-CN)', async () 
 });
 
 test('disabling a built-in entry re-enables keys on that site (en toast)', async () => {
-  const store = new Map([['blacklist-config', JSON.stringify({ disabled: ['youtube.com'] })]]);
-  const r = await runScenario({ hostname: 'www.youtube.com', lang: 'en', store });
+  const store = new Map([['blacklist-config', JSON.stringify({ disabled: ['netflix.com'] })]]);
+  const r = await runScenario({ hostname: 'www.netflix.com', lang: 'en', store });
   assert.strictEqual(r.video.played, true, 'disabled youtube.com must not block keys');
   assert.ok(r.toastTexts().some(t => t.includes('Play')), `en toast expected, got: ${r.toastTexts()}`);
 });
@@ -151,6 +151,16 @@ test('user-added entry takes effect, including subdomains', async () => {
   const store = new Map([['blacklist-config', JSON.stringify({ added: ['example2.com'] })]]);
   const r = await runScenario({ hostname: 'm.example2.com', lang: 'en', store });
   assert.strictEqual(r.video.played, false, 'user-added domain must block keys (subdomain too)');
+});
+
+test('YouTube is taken over by default (removed from the built-in blacklist)', async () => {
+  // Embedded YouTube players get neither native keys (no iframe focus) nor ours
+  // if deferred, so youtube.com must not sit in the default blacklist.
+  const r = await runScenario({ hostname: 'www.youtube.com', lang: 'en', store: new Map() });
+  assert.strictEqual(r.video.played, true, 'keys must work on youtube.com by default');
+  // ...and its iframe instance must still accept keys forwarded by a host page
+  const r2 = await runScenario({ hostname: 'www.youtube.com', lang: 'en', store: new Map(), keyEvent: false, message: { vh: 1, key: ' ', shift: false, alt: false } });
+  assert.strictEqual(r2.video.played, true, 'forwarded keys must reach embedded YouTube players');
 });
 
 test('suffix-anchored matching does not over-block', async () => {
@@ -214,7 +224,7 @@ test('forwarded keys are rejected without the vh marker, foreign source, or on b
   const r2 = await runScenario({ hostname: 'example.com', lang: 'en', store: new Map(), keyEvent: false, message: { vh: 1, key: ' ', shift: false, alt: false }, fromParent: false });
   assert.strictEqual(r2.video.played, false, 'messages from other frames must be ignored');
   // the receiving iframe is itself blacklisted
-  const r3 = await runScenario({ hostname: 'www.youtube.com', lang: 'en', store: new Map(), keyEvent: false, message: { vh: 1, key: ' ', shift: false, alt: false } });
+  const r3 = await runScenario({ hostname: 'www.netflix.com', lang: 'en', store: new Map(), keyEvent: false, message: { vh: 1, key: ' ', shift: false, alt: false } });
   assert.strictEqual(r3.video.played, false, 'blacklisted frames must not act on forwarded keys');
 });
 
