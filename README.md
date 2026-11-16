@@ -20,7 +20,7 @@ A Tampermonkey userscript that adds keyboard controls to **any** HTML5 video on 
 | `Alt + Enter` | Toggle fullscreen |
 
 - **Smart targeting** — controls the largest visible video on the page
-- **Defers to native hotkeys** — exits on sites that implement their own (Netflix, Twitch, TikTok, …). YouTube is taken over instead: its embedded players lose native keys without focus, and Space/arrows semantics are identical to ours. Manage the blacklist from the userscript menu: add sites, disable or reset entries
+- **Per-site blacklist** — nothing is special-cased by default; if a site's own hotkeys clash with ours, add it from the userscript menu (add / disable / reset anytime)
 - **Typing-safe** — never fires while you're typing in inputs / contenteditable
 - **In-video toast** — feedback shows inside the video viewport, bottom-center; works in fullscreen
 - **Live-stream safe** — no seeking on streams without a finite duration
@@ -41,7 +41,7 @@ Everything you might want to tweak sits in the config block at the top:
 ```js
 const SEEK_STEP = 5;      // ←/→ step in seconds
 const VOLUME_STEP = 0.05; // ↑/↓ step
-const BLACKLIST = [ ... ]; // built-in defaults, managed via the userscript menu
+const BLACKLIST = [ ... ]; // starts empty; sites are added via the userscript menu
 ```
 
 ## Development

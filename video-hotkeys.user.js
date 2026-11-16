@@ -2,9 +2,9 @@
 // @name         网页视频播放快捷键（空格暂停 / ←→ 快进 / ↑↓ 音量）
 // @name:en      Video Hotkeys for Any Site (Space / ←→ / ↑↓)
 // @namespace    dsh.video.hotkeys
-// @version      1.7.0
-// @description  给任意网页视频补上键盘控制：空格 播放/暂停，←/→ 快退/快进 5s（Shift 加速 30s），↑/↓ 音量，Alt+Enter 全屏。部分有成熟快捷键的站点（爱奇艺、Netflix 等）默认让路，黑名单可从脚本菜单管理。提示显示在视频窗口内底部，支持全屏。
-// @description:en  Adds keyboard controls to any web video: Space play/pause, ←/→ seek ±5s (Shift ±30s), ↑/↓ volume, Alt+Enter fullscreen. Sites with mature native hotkeys (Netflix etc.) are deferred to by default; the blacklist is manageable from the script menu. Toast shows inside the video, works in fullscreen.
+// @version      1.8.0
+// @description  给任意网页视频补上键盘控制：空格 播放/暂停，←/→ 快退/快进 5s（Shift 加速 30s），↑/↓ 音量，Alt+Enter 全屏。个别快捷键冲突的站点可通过脚本菜单加入黑名单让路。提示显示在视频窗口内底部，支持全屏。
+// @description:en  Adds keyboard controls to any web video: Space play/pause, ←/→ seek ±5s (Shift ±30s), ↑/↓ volume, Alt+Enter fullscreen. Sites whose own hotkeys clash can be blacklisted from the script menu. Toast shows inside the video, works in fullscreen.
 // @author       Dana
 // @license      MIT
 // @homepageURL  https://github.com/yanxijian/video-hotkeys
@@ -26,15 +26,10 @@
   // ===== 配置 =====
   const SEEK_STEP = 5;      // ←/→ 步长（秒），按住 Shift 为 30
   const VOLUME_STEP = 0.05; // ↑/↓ 步长
-  // 内置黑名单：这些网站有自己的快捷键，默认不接管（可在脚本菜单中禁用/恢复）
-  // 注1：B站曾因原生快捷键不可靠被移出黑名单，由本脚本统一接管
-  // 注2：YouTube 同样移出（2026-11）——其嵌入式播放器在第三方页面里 iframe 无焦点、
-  //      原生快捷键失效，黑名单反而让两边都不管；且其 Space/←→ 语义与本脚本一致，
-  //      接管无冲突（f/m/j/l 等其余快捷键不受影响，仍由 YouTube 自己处理）
-  const BLACKLIST = [
-    'iqiyi.com', 'youku.com',
-    'v.qq.com', 'netflix.com', 'twitch.tv', 'douyin.com', 'tiktok.com',
-  ];
+  // 默认黑名单为空（v1.8.0 起）：主流视频站的原生快捷键普遍不可靠、缺失，或与方向键
+  // 语义冲突，「让路」的前提不成立，默认全量接管以保证体验一致。
+  // 需要让路的站点由用户在脚本菜单「管理黑名单」里自行添加（配置存 GM 存储）
+  const BLACKLIST = [];
 
   // ===== UI strings =====
   // Toast text follows the browser language; unrecognized languages fall back to English.

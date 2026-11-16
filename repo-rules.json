@@ -79,9 +79,7 @@
     ".githooks/commit-msg",
     ".github/workflows/hygiene.yml",
     ".github/workflows/test.yml",
-    "tests/blacklist.test.js",
-    "docs/zh/blacklist-notes.md",
-    "docs/en/blacklist-notes.md"
+    "tests/blacklist.test.js"
   ],
   "markdown": {
     "globs": [
@@ -97,24 +95,6 @@
       ],
       "switch_line": true,
       "stale": "warning"
-    },
-    "translations": {
-      "pairs": [
-        [
-          "docs/zh/blacklist-notes.md",
-          "docs/en/blacklist-notes.md"
-        ]
-      ],
-      "marker": "translated-from:",
-      "stale": "warning",
-      "cover": [
-        {
-          "from": "docs/zh",
-          "to": "docs/en",
-          "missing": "error"
-        }
-      ],
-      "untracked": true
     }
   },
   "readme_badges": {
